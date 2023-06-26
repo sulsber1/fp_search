@@ -18,6 +18,7 @@ SAMPLE_SMILE = "c1cc(ccc1[C@H]([C@@H](CO)NC(=O)C(Cl)Cl)O)[N+](=O)[O-]"
 RETURN_NUM_RESULTS = 200
 SAMPLE_NAME = "result_files/CPU_fp_search_small_debug"
 CSV_REF_DB = "files/chembl_csv.csv"
+LOCATION_OF_CHUNKS = "pq/"
 TOTAL = 2372673
 DIVISION_SIZE = 100000
 divided =  math.ceil(TOTAL / DIVISION_SIZE)
@@ -55,13 +56,13 @@ def prepare_smiles_low_memory() -> list:
     skip_rows = lambda x : x * ROW_NUMBER if x == 0 else x * ROW_NUMBER
     for i in range(0, divided): 
         this = pd.read_csv(CSV_REF_DB, skiprows= skip_rows(i), nrows=ROW_NUMBER, names = ['smile'])
-        this.to_parquet(f"pq/pq_{i}.parquet", index=None)
+        this.to_parquet(f"{LOCATION_OF_CHUNKS}pq_{i}.parquet", index=None)
 
 def read_parque_low_memory():
     smile_list = []
     ref_fps = []
     for i in range(0, divided):
-        this = pd.read_parquet(f"pq/pq_{i}.parquet", columns=['smile'])
+        this = pd.read_parquet(f"{LOCATION_OF_CHUNKS}pq_{i}.parquet", columns=['smile'])
         for x in this['smile']:
             #Sometimes thes fail to generate so need to test
             mol = Chem.MolFromSmiles(x)
