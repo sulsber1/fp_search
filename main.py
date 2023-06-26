@@ -5,7 +5,7 @@ from pydantic import BaseModel
 import API_CPU_fp_search
 
 # Preload when the API starts
-smile_from_db, ref_fps = API_CPU_fp_search.startup()
+smile_from_db, ref_fps = API_CPU_fp_search.startup_low_memory()
 
 
 class Structure(BaseModel):
@@ -25,7 +25,7 @@ def read_root():
 @app.post("/CPU_fp/")
 def get_fp(smileObj : Structure):
     now = time.perf_counter()
-    results = API_CPU_fp_search.main(smile_from_db, ref_fps, smileObj.smiles)
+    results = API_CPU_fp_search.main_low_memory(smile_from_db, ref_fps, smileObj.smiles)
     later = time.perf_counter()
     print(f"{later - now}")
     #return Query_Response(**results)
